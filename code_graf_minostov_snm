@@ -1,0 +1,79 @@
+//#include "stdafx.h"
+//#include <fstream>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <set>
+
+#define ll long long
+
+using namespace std;
+
+struct tr {  // tr в сокращении от tree!
+	int w, a, b;
+};
+
+ll sm = 0;
+int n, m;
+vector<int> p, g;
+vector<tr> s;
+
+int find_set(int u) {
+	if (u == p[u]) {
+		return u;
+	}
+	return p[u] = find_set(p[u]);
+}
+
+void union_sets(int a, int b) {
+	a = find_set(a);
+	b = find_set(b);
+	if (a != b) {
+		if (g[a] > g[b]) {
+			swap(a, b);
+		}
+		if (g[a] == g[b]) {
+			g[b]++;
+		}
+		p[a] = b;
+	}
+}
+
+bool comp(tr a, tr b) {
+	return (a.w < b.w || (a.w == b.w && a.a < b.a)
+		|| (a.w == b.w && a.a == b.a && a.b < b.b));
+}
+
+int main()
+{
+	cin >> n >> m;
+	g.resize(n);
+	p.resize(n);
+	for (int i = 0; i < n; i++) {
+		g[i] = 1;
+		p[i] = i;
+	}
+	for (int i = 0; i < m; i++) {
+		int a, b, c;
+		cin >> a >> b >> c;
+		a--; b--;
+		tr g;
+		g.w = c;
+		g.a = a;
+		g.b = b;
+		s.push_back(g);
+	}
+	sort(s.begin(), s.end(), comp);
+	for (auto i : s) {
+		tr t = i;
+		if (find_set(t.a) != find_set(t.b)) {
+			union_sets(t.a, t.b);
+			sm += t.w;
+		}
+	}
+	cout << sm;
+	return 0;
+}
+
